@@ -22,7 +22,7 @@
     "local_mirror_url":"/",
     "to_main_site_url":"",
     "schedule":{
-      "time_config":"* * * * * *",
+      "time_config":"1 * * * * *",
       "the_key":""
     }
   },

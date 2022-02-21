@@ -1,0 +1,26 @@
+{
+  "name": "theresa_proxy",
+  "version": "0.0.1",
+  "description": "多节点负载均衡反向代理程序",
+  "main": "app.js",
+  "scripts": {
+    "test": "SET NODE_ENV=development&&nodemon app.js --ignore cache_tmp/",
+    "serve": "SET NODE_ENV=production&&node app.js"
+  },
+  "keywords": [
+    "反向代理",
+    "负载均衡"
+  ],
+  "author": "dangjinghao",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.26.0",
+    "config": "^3.3.7",
+    "express": "^4.17.3",
+    "http-proxy-middleware": "^2.0.3",
+    "js-md5": "^0.7.3",
+    "log4js": "^6.4.1",
+    "memory-cache": "^0.2.0",
+    "node-schedule": "^2.1.0"
+  }
+}

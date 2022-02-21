@@ -1,0 +1,7 @@
+node_modules
+DevReadme.md
+*.log
+logs
+config/development.json
+test.js
+cache_tmp

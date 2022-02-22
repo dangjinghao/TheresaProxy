@@ -9,7 +9,7 @@ function send_status(url,the_check_key,mirror_url){
         url:url,
         data:{
             online:getUsersNum(),
-            ram_rate:`${(os.totalmem()/1024**3).toFixed(2)}/${((os.totalmem()-os.freemem())/1024**3).toFixed(2)}`,
+            ram_rate:`${((os.totalmem()-os.freemem())/1024**3).toFixed(2)}/${(os.totalmem()/1024**3).toFixed(2)}`,
             mirror_url:mirror_url,
             T_key:the_check_key
         }

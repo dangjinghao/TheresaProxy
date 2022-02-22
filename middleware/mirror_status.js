@@ -1,5 +1,6 @@
-const e = require("express")
 const mcache = require("memory-cache")
+const log4js = require("log4js")
+logger = log4js.getLogger("mirror_status")
 mirror_status = new mcache.Cache()
 
 function status_handler(online,ram_rate,mirror_url){

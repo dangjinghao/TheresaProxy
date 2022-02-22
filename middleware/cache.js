@@ -92,11 +92,11 @@ function UserCacheMiddle(req, res, next) {
 function file_auto_save(file_url,content_buffer){
   var parse_url = path.parse(file_url);
   fs.mkdir(parse_url.dir,{recursive:true},(err)=>{
-    if(err)  logger.error("mkdir error"+err)
+    if(err)  logger.error("创建文件夹错误"+err)
   })
 
   fs.writeFile(file_url,content_buffer,(err)=>{
-    if(err) logger.error("write file error"+err)
+    if(err) logger.error("文件写入错误"+err)
   })
 
 }

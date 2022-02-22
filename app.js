@@ -25,7 +25,7 @@ switch(site_mode){
     case "mix":
         if(proxy_2_main_site_url===""){
             schedule.scheduleJob(schedule_time_config,()=>{
-                send_status(`127.0.0.1:${express_listen_port}`+"/mirror_api/proxy_status",the_check_key,mirror_url)
+                send_status(`http://127.0.0.1:${express_listen_port}`+"/mirror_api/proxy_status",the_check_key,mirror_url)
             })
     
         }

@@ -23,10 +23,17 @@ app.use(log4js.connectLogger(logger, {
 
 switch(site_mode){
     case "mix":
-        schedule.scheduleJob(schedule_time_config,()=>{
-            send_status(proxy_2_main_site_url+"/mirror_api/proxy_status",the_check_key,mirror_url)
-        })
-        
+        if(proxy_2_main_site_url===""){
+            schedule.scheduleJob(schedule_time_config,()=>{
+                send_status(`127.0.0.1:${express_listen_port}`+"/mirror_api/proxy_status",the_check_key,mirror_url)
+            })
+    
+        }
+        else{
+            schedule.scheduleJob(schedule_time_config,()=>{
+                send_status(proxy_2_main_site_url+"/mirror_api/proxy_status",the_check_key,mirror_url)
+            })
+        }
         app.use(main_site_router)
         app.use(local_mirror_url, StaticCacheMiddle);
         app.use(local_mirror_url, UserCacheMiddle);
@@ -34,7 +41,7 @@ switch(site_mode){
 
         break;
     case "mirror":
-        schedule.scheduleJob(schedule_time_config,()=>{
+        if(proxy_2_main_site_url!=="") schedule.scheduleJob(schedule_time_config,()=>{
             send_status(proxy_2_main_site_url+"/mirror_api/proxy_status",the_check_key,mirror_url)
         })
 
@@ -43,7 +50,7 @@ switch(site_mode){
         app.use(local_mirror_url, ProxyMw);
         break;
     case "main_site":
-        //加载路由文件
+        app.use(main_site_router)
         break;
     default:
         break;

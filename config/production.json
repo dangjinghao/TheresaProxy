@@ -1,5 +1,5 @@
 {
-  "site_mode": "mix",
+  "site_mode": "mirror",
   "express_listen_port": 3011,
   "logs": {
     "app": "./logs/app.log",
@@ -23,7 +23,8 @@
     "to_main_site_url":"",
     "schedule":{
       "time_config":"1 * * * * *",
-      "the_key":""
+      "the_key":"",
+      "mirror_url":""
     }
   },
   

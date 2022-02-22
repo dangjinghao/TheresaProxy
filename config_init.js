@@ -47,6 +47,7 @@ if (process.env.NODE_ENV === "development") {
 
 
 logger.info(`网站模式为${site_mode}`)
+
 switch (site_mode) {
     case "mix":
         logger.info(`重定向链接为${redirect_mirror_url}`)
@@ -56,7 +57,15 @@ switch (site_mode) {
         logger.info(`express监听端口为${express_listen_port}`)
         logger.info(`向<head>中添加 ${append_head} `)
         logger.info(`访问${local_mirror_url}以进入镜像站点`)
-        logger.info(`镜像站指向主站的url为${proxy_2_main_site_url}`)
+        logger.info(`镜像站的主站的url为${proxy_2_main_site_url}`)
+        logger.info(`镜像站的定期计划配置为${schedule_time_config}`)
+        logger.info(`镜像站点key为${the_check_key}`)
+        if(proxy_2_main_site_url!=="") logger.info(`镜像站的url为${mirror_url}`)
+        logger.info(`主站接受的key为${accepted_keys}`)
+
+        logger.debug(`proxy_changeOrigin:${proxy_changeOrigin}`)
+        logger.debug(`proxy_ws:${proxy_ws}`)
+        logger.debug(`pathRewrite:${proxy_pathRewrite}`)
 
         break;
     case "mirror":
@@ -67,7 +76,11 @@ switch (site_mode) {
         logger.info(`express监听端口为${express_listen_port}`)
         logger.info(`向<head>中添加 ${append_head} `)
         logger.info(`访问${local_mirror_url}以进入镜像站点`)
-        logger.info(`镜像站指向主站的url为${proxy_2_main_site_url}`)
+        logger.info(`镜像站的主站的url为${proxy_2_main_site_url}`)
+        logger.info(`镜像站的定期计划配置为${schedule_time_config}`)
+        logger.info(`镜像站点key为${the_check_key}`)
+        if(proxy_2_main_site_url!=="") logger.info(`镜像站的url为${mirror_url}`)
+
         logger.debug(`proxy_changeOrigin:${proxy_changeOrigin}`)
         logger.debug(`proxy_ws:${proxy_ws}`)
         logger.debug(`pathRewrite:${proxy_pathRewrite}`)
@@ -75,6 +88,8 @@ switch (site_mode) {
         break;
     case "main_site":
         logger.info(`重定向链接为${redirect_mirror_url}`)
+        logger.info(`主站接受的key为${accepted_keys}`)
+
         break;
     default:
         logger.error("无法识别的网站模式,请重新填写")

@@ -12,8 +12,8 @@ const logger = log4js.getLogger("express_router")
 router.get(redirect_mirror_url,(req,res,next)=>{
     var stat_mirror = JSON.parse(all_status())
     var locate_mirror = sort_mirror(stat_mirror)
-    res.setHeader("Location",locate_mirror).status(301)
-    //res.send(te)
+    res.setHeader("location",locate_mirror).status(301)
+    res.send("OK")
     return 0;
 })
 

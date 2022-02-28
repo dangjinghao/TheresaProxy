@@ -5,27 +5,30 @@
     "app": "./logs/app.log",
     "access": "./logs/access.log"
   },
+
   "proxy": {
     "middleware_config":{
         "target": "",
         "changeOrigin": true,
         "ws": true,
-        "pathRewrite": {}    
+        "pathRewrite": {},
+        "selfHandleResponse":true
     },
+
     "cache": {
       "static_buffer_time": 600000,
       "user_ip_check_time": 600000
     },
-    "rewrite_body": {
-      "head": ""
-    },
+
     "local_mirror_url":"/",
     "to_main_site_url":"",
+    
     "schedule":{
       "time_config":"1 * * * * *",
       "the_key":"",
       "mirror_url":""
     }
+
   },
   
   "main_site":{

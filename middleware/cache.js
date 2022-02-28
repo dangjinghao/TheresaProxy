@@ -47,7 +47,7 @@ function StaticCacheSave(responseBuffer, req,proxyRes,res) {
 
     StaticMCache.put(key, md5_name, static_buffer_time,(key,value)=>{
       fs.unlink(path.normalize(`${__dirname}/../cache_tmp/${value}`),(err)=>{if(err) logger.err(`删除缓存错误${err}`)});
-      logger.info(`${key}缓存已过期并删除`);
+      logger.debug(`${key}缓存已过期并删除`);
     });
     logger.debug(`保存文件索引${key}:${md5_name},过期时间:${static_buffer_time/60000}m`);
     //save file in there
@@ -63,7 +63,7 @@ function UserMCache(ip, time) {
   var UserIp = OnlineUserMCache.get(ip);
 
   if (!UserIp) OnlineUserMCache.put(ip, time,user_ip_check_time,(key,value)=>{
-  logger.info(`${key}用户ip已过期并删除`);
+  logger.debug(`${key}用户ip已过期并删除`);
   });
   else return UserIp;
 }

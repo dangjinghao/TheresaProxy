@@ -1,10 +1,11 @@
 {
   "name": "theresa_proxy",
-  "version": "0.5",
+  "version": "0.1.7",
   "description": "多节点负载均衡反向代理程序",
   "main": "app.js",
   "scripts": {
     "test": "SET NODE_ENV=development&&nodemon app.js --ignore cache_tmp/",
+    "linux_test":"export NODE_ENV=development&&node app.js",
     "win_serve": "SET NODE_ENV=production&&node app.js",
     "serve":"export NODE_ENV=production&&node app.js"
   },

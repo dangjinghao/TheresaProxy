@@ -11,10 +11,11 @@ const app = express();
 
 if(process.env.NODE_ENV==="development"){
     var logger = log4js.getLogger("express_debug")
-    
+    var schedule_logger = log4js.getLogger("schedule_logger")
 }else{
     var logger = log4js.getLogger("express_access")
 }
+
 app.use(log4js.connectLogger(logger, {
     level: "auto",
     format:
@@ -24,14 +25,18 @@ app.use(log4js.connectLogger(logger, {
 switch(site_mode){
     case "mix":
         if(proxy_2_main_site_url===""){
+            schedule_logger.info(`定时计划为向http://127.0.0.1:${express_listen_port}/mirror_api/proxy_status 发送状态信息`)
+            
             schedule.scheduleJob(schedule_time_config,()=>{
-                send_status(`http://127.0.0.1:${express_listen_port}`+"/mirror_api/proxy_status",the_check_key,mirror_url)
+                send_status(`http://127.0.0.1:${express_listen_port}/mirror_api/proxy_status`,the_check_key,mirror_url)
             })
     
         }
         else{
+            schedule_logger.info(`定时计划为向${proxy_2_main_site_url}/mirror_api/proxy_status 发送状态信息`)
+
             schedule.scheduleJob(schedule_time_config,()=>{
-                send_status(proxy_2_main_site_url+"/mirror_api/proxy_status",the_check_key,mirror_url)
+                send_status(`${proxy_2_main_site_url}/mirror_api/proxy_status`,the_check_key,mirror_url)
             })
         }
         app.use(main_site_router)
@@ -41,9 +46,12 @@ switch(site_mode){
 
         break;
     case "mirror":
-        if(proxy_2_main_site_url!=="") schedule.scheduleJob(schedule_time_config,()=>{
-            send_status(proxy_2_main_site_url+"/mirror_api/proxy_status",the_check_key,mirror_url)
-        })
+        if(proxy_2_main_site_url!=="") {
+            schedule_logger.info(`定时计划为向${proxy_2_main_site_url}/mirror_api/proxy_status 发送状态信息`)
+            schedule.scheduleJob(schedule_time_config,()=>{
+                send_status(proxy_2_main_site_url+"/mirror_api/proxy_status",the_check_key,mirror_url)
+            })
+        }
 
         app.use(local_mirror_url, StaticCacheMiddle);
         app.use(local_mirror_url, UserCacheMiddle);
@@ -60,5 +68,5 @@ switch(site_mode){
 
 
 app.listen(express_listen_port,()=>{
-    logger.info("express start successfully")
+    logger.info("express 启动成功")
 });

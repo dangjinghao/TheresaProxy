@@ -13,13 +13,14 @@ router.get(redirect_mirror_url,(req,res,next)=>{
     var stat_mirror = JSON.parse(all_status())
     var locate_mirror = sort_mirror(stat_mirror)
     res.setHeader("location",locate_mirror).status(301)
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Pragma", "no-cache");
     res.send("OK")
     return 0;
 })
 
 
 router.post("/mirror_api/proxy_status",jsonParser,(req,res)=>{
-    logger.debug(req.body)
     if(accepted_keys.includes(req.body['T_key'])){
         status_handler(req.body["online"],req.body['ram_rate'],req.body["mirror_url"])
 

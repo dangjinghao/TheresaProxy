@@ -1,6 +1,6 @@
 # TheresaProxy
 
-多反代节点重定向实现 响应体修改 反向代理资源缓存 开箱即用
+多反代节点重定向实现 响应体修改 可拓展插件 反向代理资源缓存 开箱即用
 
 ## TheresaProxy是什么
 
@@ -67,9 +67,6 @@
       "static_buffer_time": 600000,//静态资源在本地的缓存时间,单位ms
       "user_ip_check_time": 600000 //用户记录与检测时间，用于在节点向主站发送信息时主站对节点负载的推算
     },
-    "rewrite_body": {
-      "head": ""//向响应体的head标签中插入的文本
-    },
     "local_mirror_url":"/",//反向服务器在本地的挂载路径
     "to_main_site_url":"",//镜像的主站路径，用于镜像站和主站通信时
     "schedule":{//定时任务
@@ -88,7 +85,6 @@
 ```
 
 - 如有需要，在`proxy.middleware_config`中的后三项配置可查看[chimurai/http-proxy-middleware: The one-liner node.js http-proxy middleware for connect, express and browser-sync (github.com)](https://github.com/chimurai/http-proxy-middleware)进行配置
-- `rewrite_body.head`中插入的文本为html文本，例如"head": "`<script>alert("test")</script>`"会在页面加载完成后弹出alert
 - `schedule.mirror_url`建议使用随机数，或者滚键盘弄出来一串
 - `proxy.local_mirror_url`可用于当你的服务器除了负责反向代理还需要负责别的业务的时候
 - `to_main_site_url`配置项在结尾不能加`/`，例如只能是`http://127.0.0.1:3000`此问题为bug
@@ -101,14 +97,23 @@
 
 ## TODOLIST
 
-- 完善配置文件的编写
-- 负载均衡完善到可较好使用的程度
-- 修改logger，为每个功能划分logger便于追查bug
-- 添加新功能
+- [x] 完善配置文件的编写
+
+- [x] 将`DIY.js`修改成较为规范的插件导入方式
+
+- [x] 负载均衡完善到可较好使用的程度
+
+- [x] 修改logger，为每个功能划分logger便于追查bug
+
+- [ ] 实现插件在获取响应前的处理
+
+- [ ] 添加新功能
   - 定期检查缓存
   - 定期存储人数数据用于统计镜像站访问次数
   - 实现cpu占用率计算
   - 自动生成T_key不用滚键盘
+
+  
 
 ##  `所谓`高阶应用
 
@@ -134,9 +139,6 @@
     "cache": {
       "static_buffer_time": 600000,
       "user_ip_check_time": 600000
-    },
-    "rewrite_body": {
-      "head": ""
     },
     "local_mirror_url":"/m1",
     "to_main_site_url":"http://m1.example.com:3011",
@@ -174,9 +176,6 @@
       "static_buffer_time": 600000,
       "user_ip_check_time": 600000
     },
-    "rewrite_body": {
-      "head": ""
-    },
     "local_mirror_url":"/m2",
     "to_main_site_url":"http://m1.example.com:3011",
     "schedule":{
@@ -213,9 +212,6 @@
       "static_buffer_time": 600000,
       "user_ip_check_time": 600000
     },
-    "rewrite_body": {
-      "head": ""
-    },
     "local_mirror_url":"/m3",
     "to_main_site_url":"http://m1.example.com:3011",
     "schedule":{
@@ -235,23 +231,28 @@
 
 此时配置完成了三台镜像和一台主站，镜像会定期发送自身状态给主站，此时访问主站的重定向url`http://m1.example.com:3011/into_mirror`主站会计算之前通信过的镜像站的访问ip数来选择最佳镜像站，进而将访问者重定向到对应站点
 
-~~由于条件限制，目前此功能仅有理论测试~~
 
 
 
-### 向响应体插入数据与DIY.js
 
-#### rewrite_body.head
+### 插件功能
 
-通过此配置可向head标签中插入数据。
+对响应体的修改
 
-#### DIY.js
+**插件在反向代理取得响应后加载处理，即无法通过插件直接修改用户的请求，正在尝试解决**
 
-此模块中的DIY_interceptor函数会被使用，传入的四个参数可以查看[chimurai/http-proxy-middleware: The one-liner node.js http-proxy middleware for connect, express and browser-sync (github.com)](https://github.com/chimurai/http-proxy-middleware#intercept-and-manipulate-responses)
+#### plugins_config/insert_head_element.json
 
-**注意，此函数的加载位于插入head标签之前，且所有响应体都会经过此函数的一次处理**
+通过此文件的`text`配置可向head标签中插入数据。
+
+同样的，此插件科作为一个编写插件的示范插件代码。
+
+传入的四个参数可以查看[chimurai/http-proxy-middleware: The one-liner node.js http-proxy middleware for connect, express and browser-sync (github.com)](https://github.com/chimurai/http-proxy-middleware#intercept-and-manipulate-responses)
 
 如果开发者并不熟悉此处的开发，请尽量使用配置文件的head标签插入数据来实现，防止二进制数据出错等问题
 
 ~~毕竟我也不太会，所以此功能依旧没有经过严格测试~~
 
+### 编写插件
+
+待完善

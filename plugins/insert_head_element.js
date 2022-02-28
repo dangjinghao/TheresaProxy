@@ -1,4 +1,4 @@
-const {PluginConfig} = require("../middleware/plugin_tools")
+const {PluginConfig,register} = require("../middleware/plugin_load")
 var IHE_Config = new PluginConfig("insert_head_element")
 
 function plugin_main(responseBuffer, proxyRes, req, res) {
@@ -12,14 +12,13 @@ function plugin_main(responseBuffer, proxyRes, req, res) {
       ) {
         const res_body = responseBuffer.toString("utf8");
         
-        responseBuffer=res_body.replace("<head>",IHE_Config.ConfigJson["text"])
+        responseBuffer=res_body.replace("<head>","<head>"+IHE_Config.ConfigJson["text"])
         
       }
     }
   }
   return [responseBuffer, proxyRes, req, res]
 }
+const plugin_register=new register()
+plugin_register.on_proxy_response(plugin_main)
 
-module.exports = {
-  plugin_main,
-};

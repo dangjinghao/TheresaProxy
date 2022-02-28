@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "SET NODE_ENV=development&&nodemon app.js --ignore cache_tmp/",
-    "linux_test":"export NODE_ENV=development&&node app.js",
+    "linux_test": "export NODE_ENV=development&&node app.js",
     "win_serve": "SET NODE_ENV=production&&node app.js",
-    "serve":"export NODE_ENV=production&&node app.js"
+    "serve": "export NODE_ENV=production&&node app.js"
   },
   "keywords": [
     "反向代理",

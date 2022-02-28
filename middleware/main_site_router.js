@@ -1,8 +1,8 @@
 const express = require("express")
-const {redirect_mirror_url,accepted_keys} = require("./config_init")
+const {redirect_mirror_url,accepted_keys} = require("../config_init")
 const log4js = require("log4js")
 const bodyParser=require("body-parser");
-const {status_handler,all_status,sort_mirror}=require("./middleware/mirror_status")
+const {status_handler,all_status,sort_mirror}=require("./mirror_status")
 var router =express.Router()
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });

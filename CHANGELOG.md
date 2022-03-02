@@ -1,5 +1,27 @@
 # CHANGE LOG
 
+## 0.2.0 -2022.03.02
+**REBUILD ALL**
+
+### Features
+
+- More hooks.
+
+### Changed
+
+- Split application features into some single plugins.
+- Split application configuration file into  single files.
+- Adjust the application structure
+
+### Refactored
+
+- Solve the problem of import with each other in the development process.
+
+### Removed
+
+- many useless files.
+
+
 ## 0.1.7 - 2022.02.28
 
 ### Features

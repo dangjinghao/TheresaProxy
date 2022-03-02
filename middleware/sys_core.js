@@ -25,8 +25,6 @@ log4js.configure({
     categories: {
       default: { appenders: ["console"], level: "debug" },
       plugins_manager: { appenders: ["file", "console"], level: "info" },
-      MSMR: { appenders: ["console"], level: "info" },
-      mirror_status: { appenders: ["console"], level: "info" },
       express_access: { appenders: ["access"], level: "info" },
       cache: { appenders: ["file", "console"], level: "info" },
       app_framework: { appenders: ["file", "console"], level: "info" },
@@ -37,11 +35,12 @@ log4js.configure({
 //在系统初始化时候进行
 var on_system_init_list = []
 
+//添加定时任务
+var on_schedule_list = []
+
 //在express初始化之前进行
 var on_express_init_list = []
 
-//添加定时任务
-var on_schedule_list = []
 //在用户请求时处理
 var on_user_require_list = []
 

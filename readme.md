@@ -1,6 +1,6 @@
 # TheresaProxy
 
-多反代节点重定向实现 响应体修改 可拓展插件 反向代理资源缓存 开箱即用
+多反代节点重定向实现 响应体修改 可拓展插件系统 反向代理资源缓存 开箱即用
 
 ## TheresaProxy是什么
 
@@ -42,52 +42,34 @@
 
 5. 修改`config/production.json`文件，将其中的target配置项填写需要代理的站点地址，例如`https://archiveofourown.org/`
 
-6. 使用`npm run serve`运行程序（如果是windows系统请使用`npm run win_serve`）
+6. 使用`npm run serve`运行程序（如果是windows系统请使用`npm run win_serve`）（依旧推荐在linux发行版中部署）
 
 7. 查看端口，开始正常使用反向代理网站。
 
 ## 配置项说明
 
 ```json
-{
-  "site_mode": "mirror",//运行模式，分为mix/mirror/main_site
-  "express_listen_port": 3011,//express的监听端口，也即服务器运行端口
-  "logs": {
-    "app": "./logs/app.log",//项目运行日志
-    "access": "./logs/access.log" //express的access日志
-  },
-  "proxy": {
-    "middleware_config":{
-        "target": "",//需要反向代理的网站，例如http(s)://example.com/
-        "changeOrigin": true,
-        "ws": true,
-        "pathRewrite": {}    
+{//位于config/production.json
+    "mode": "mix",//程序运行模式
+    "listen_port": 3011,//express监听端口
+    "logs": {
+      "app": "logs/app.log",
+      "access": "logs/access.log"
     },
-    "cache": {
-      "static_buffer_time": 600000,//静态资源在本地的缓存时间,单位ms
-      "user_ip_check_time": 600000 //用户记录与检测时间，用于在节点向主站发送信息时主站对节点负载的推算
-    },
-    "local_mirror_url":"/",//反向服务器在本地的挂载路径
-    "to_main_site_url":"",//镜像的主站路径，用于镜像站和主站通信时
-    "schedule":{//定时任务
-      "time_config":"1 * * * * *",//Cron风格定时器
-      "the_key":"",//镜像站与主站通信时传输的key，用于身份验证时与accepted_keys中的元素进行匹配
-      "mirror_url":"" //镜像站传输自己的url用于主站重定向url
+    "disable_plugins": [],//禁止加载的插件
+    "enable_plugins": [""],//允许运行的插件
+    "proxy": {
+      "target": "",//代理网站
+      "changeOrigin": true,//中间件配置项
+      "ws": true,
+      "pathRewrite": {},
+      "selfHandleResponse": true
     }
-  },
-  
-  "main_site":{
-    "redirect_mirror_url":"/into_mirror",//main_site和mix模式下访问后用于重定向的路径
-    "accepted_keys":[""] //main_site和mix模式下接收mirror传输的状态信息时需要包含的the_key
   }
-}
-
 ```
 
-- 如有需要，在`proxy.middleware_config`中的后三项配置可查看[chimurai/http-proxy-middleware: The one-liner node.js http-proxy middleware for connect, express and browser-sync (github.com)](https://github.com/chimurai/http-proxy-middleware)进行配置
-- `schedule.mirror_url`建议使用随机数，或者滚键盘弄出来一串
-- `proxy.local_mirror_url`可用于当你的服务器除了负责反向代理还需要负责别的业务的时候
-- `to_main_site_url`配置项在结尾不能加`/`，例如只能是`http://127.0.0.1:3000`此问题为bug
+- 如有需要，在`proxy`中的后三项配置可查看[chimurai/http-proxy-middleware: The one-liner node.js http-proxy middleware for connect, express and browser-sync (github.com)](https://github.com/chimurai/http-proxy-middleware)进行配置
+- 其他配置已分离至插件系统中，在`plugins_config`文件夹中进行对应插件配置。
 
 ## bug清单
 
@@ -105,7 +87,7 @@
 
 - [x] 修改logger，为每个功能划分logger便于追查bug
 
-- [ ] 实现插件在获取响应前的处理
+- [x] 实现插件在获取响应前的处理
 
 - [ ] 添加新功能
   - 定期检查缓存
@@ -117,142 +99,185 @@
 
 ##  `所谓`高阶应用
 
+### 静态资源缓存
+
+在`mix`与`mirror`的配置中，`static_cache`插件会被加载，存在一个插件配置，位于`/plugins_config/static_cache.json`文件
+
+```json
+{
+    "static_buffer_time": 6000000//单位为ms
+}
+```
+
+### 修改响应体
+
+在`mix`和`mirror`的配置中，`insert_head_element`插件被加载，存在一个插件配置，位于`/plugins/insert_head_element.json`文件
+
+```json
+{
+    "text":""//在响应体的头标签中插入文本
+}
+```
+
 ### 负载均衡
 
-假设有三台主机，其中两台模式为mirror,一台为mix，三台主机配置文件如下
+在`mix`和`mirror`的配置中，`mirror_status`插件被加载，存在一个插件配置，位于`/plugins/mirror_status.json`文件
 
 ```json
-{//mix模式，作为主站和一个镜像站 http://m3.example.com:3011/m1访问镜像站
-  "site_mode": "mix",
-  "express_listen_port": 3011,
+{
+    "user_ip_save_time":600000,//访问ip访问缓存时间
+    "carried_mirror_url":"http://127.0.0.1:3011",//
+    "carried_check_key": "",//携带key，用于验证身份
+    "main_site_url":"http://127.0.0.1:3011/mirror_api/proxy_status"
+}
+```
+
+在`mix`和`mirror`的配置中，`mainsite_mode_router`插件被加载，存在一个插件配置，位于`/plugins/MSMR.json`文件
+
+```json
+{
+    "redirect_mirror_url":"/into_mirror",//用户跳转链接
+    "accepted_keys":[]//接受的keys
+}
+```
+
+例如：
+
+存在三台设备，模式分别为mirror*2和mix
+
+mix模式的主机(v1.example.com)配置文件为
+
+```json
+{//config/production.json
+  "mode": "mix",
+  "listen_port": 3011,
   "logs": {
-    "app": "./logs/app.log",
-    "access": "./logs/access.log"
+    "app": "logs/app.log",
+    "access": "logs/access.log"
   },
+  "disable_plugins": [],
+  "enable_plugins": [""],
   "proxy": {
-    "middleware_config":{
-        "target": "https://example.com",
-        "changeOrigin": true,
-        "ws": true,
-        "pathRewrite": {}    
-    },
-    "cache": {
-      "static_buffer_time": 600000,
-      "user_ip_check_time": 600000
-    },
-    "local_mirror_url":"/m1",
-    "to_main_site_url":"http://m1.example.com:3011",
-    "schedule":{
-      "time_config":"1 * * * * *",
-      "the_key":"asdfkj;lfiojsdfkl",
-      "mirror_url":"http://m1.example.com:3011/m1"
-    }
-  },
-  
-  "main_site":{
-    "redirect_mirror_url":"/into_mirror",
-    "accepted_keys":["asdfkj;lfiojsdfkl","asdssssawrefk","ahfghrsdf2423r"]
+    "target": "https://example.com",
+    "changeOrigin": true,
+    "ws": true,
+    "pathRewrite": {},
+    "selfHandleResponse": true
   }
 }
 
 ```
 
 ```json
-{//作为一个镜像站节点 http://m3.example.com:3011/m2访问镜像站
-  "site_mode": "mirror",
-  "express_listen_port": 3011,
-  "logs": {
-    "app": "./logs/app.log",
-    "access": "./logs/access.log"
-  },
-  "proxy": {
-    "middleware_config":{
-        "target": "https://example.com",
-        "changeOrigin": true,
-        "ws": true,
-        "pathRewrite": {}    
-    },
-    "cache": {
-      "static_buffer_time": 600000,
-      "user_ip_check_time": 600000
-    },
-    "local_mirror_url":"/m2",
-    "to_main_site_url":"http://m1.example.com:3011",
-    "schedule":{
-      "time_config":"1 * * * * *",
-      "the_key":"asdssssawrefk",
-      "mirror_url":"http://m2.example.com:3011/m2"
-    }
-  },
-  
-  "main_site":{
+{//plugins_config/MSMR.json
     "redirect_mirror_url":"/into_mirror",
-    "accepted_keys":[""]
+    "accepted_keys":["1*s&^","123ewq","ffffdtrt"]
+}
+```
+
+```json
+{//plugins/mirror_status.json
+    "user_ip_save_time":600000,
+    "carried_mirror_url":"http://v1.example.com",
+    "carried_check_key": "1*s&^",
+    "main_site_url":"http://v1.example.com/mirror_api/proxy_status"
+}
+```
+
+
+
+mirror模式的主机(v2,v3.example.com)配置文件为
+
+```json
+{//config/production.json
+  "mode": "mirror",
+  "listen_port": 3011,
+  "logs": {
+    "app": "logs/app.log",
+    "access": "logs/access.log"
+  },
+  "disable_plugins": [],
+  "enable_plugins": [""],
+  "proxy": {
+    "target": "https://example.com",
+    "changeOrigin": true,
+    "ws": true,
+    "pathRewrite": {},
+    "selfHandleResponse": true
   }
 }
 
 ```
 
 ```json
-{//作为另一个镜像站节点 http://m3.example.com:3011/m3访问镜像站
-  "site_mode": "mirror",
-  "express_listen_port": 3011,
-  "logs": {
-    "app": "./logs/app.log",
-    "access": "./logs/access.log"
-  },
-  "proxy": {
-    "middleware_config":{
-        "target": "https://example.com",
-        "changeOrigin": true,
-        "ws": true,
-        "pathRewrite": {}    
-    },
-    "cache": {
-      "static_buffer_time": 600000,
-      "user_ip_check_time": 600000
-    },
-    "local_mirror_url":"/m3",
-    "to_main_site_url":"http://m1.example.com:3011",
-    "schedule":{
-      "time_config":"1 * * * * *",
-      "the_key":"ahfghrsdf2423r",
-      "mirror_url":"http://m3.example.com:3011/m3"
-    }
-  },
-  
-  "main_site":{
-    "redirect_mirror_url":"/into_mirror",
-    "accepted_keys":[""]
-  }
+{//v2//plugins/mirror_status.json
+    "user_ip_save_time":600000,
+    "carried_mirror_url":"http://v1.example.com",
+    "carried_check_key": "ffffdtrt",
+    "main_site_url":"http://v1.example.com/mirror_api/proxy_status"
 }
-
 ```
 
-此时配置完成了三台镜像和一台主站，镜像会定期发送自身状态给主站，此时访问主站的重定向url`http://m1.example.com:3011/into_mirror`主站会计算之前通信过的镜像站的访问ip数来选择最佳镜像站，进而将访问者重定向到对应站点
+```json
+{//v3//plugins/mirror_status.json
+    "user_ip_save_time":600000,
+    "carried_mirror_url":"http://v1.example.com",
+    "carried_check_key": "123ewq",
+    "main_site_url":"http://v1.example.com/mirror_api/proxy_status"
+}
+```
 
+此时包括v1站点在内，三个站点都会向v1站点发送系统状态（单位时间内ip访问个数，内存占用）
 
+随后访问`http://v1.example.com/into_mirror`，站点会利用301重定向来为访问者重定向到最佳站点（最少ip连接数）。
 
+## 插件编写
 
+从0.1.7版本开始，我设计了一个插件管理系统，暴露了数个钩子，并允许用户在这几个固定的运行阶段挂载函数运行。
 
-### 插件功能
+同时导出了route对象，可以允许插件自行在对应路径使用路由功能。
 
-对响应体的修改
+### Hooks
 
-**插件在反向代理取得响应后加载处理，即无法通过插件直接修改用户的请求，正在尝试解决**
+- on_system_init(func)
 
-#### plugins_config/insert_head_element.json
+​		在整个程序初始化时运行func()
 
-通过此文件的`text`配置可向head标签中插入数据。
+- on_schedule(list)
 
-同样的，此插件科作为一个编写插件的示范插件代码。
+​		系统会利用`node-schedule`模块的`scheduleJob`方法进行初始化
 
-传入的四个参数可以查看[chimurai/http-proxy-middleware: The one-liner node.js http-proxy middleware for connect, express and browser-sync (github.com)](https://github.com/chimurai/http-proxy-middleware#intercept-and-manipulate-responses)
+​		例:on_schedule(["* * * * * *",func])
 
-如果开发者并不熟悉此处的开发，请尽量使用配置文件的head标签插入数据来实现，防止二进制数据出错等问题
+- on_express_init(func
 
-~~毕竟我也不太会，所以此功能依旧没有经过严格测试~~
+​		在express初始化时候运行func()
 
-### 编写插件
+- on_user_require
 
-待完善
+​		在请求发起时处理请求(req,res,next)
+
+- on_proxy_response
+
+​		在反代站点响应请求后对响应进行处理(responseBuffer, proxyRes,req,res)
+
+*在plugins文件夹中的几个插件可作为示例查看*
+
+### 注册插件
+
+```jS
+//plugins/EGplugin.js
+
+const {PluginConfig,register} = require("../middleware/plugin_devpkg")
+//在插件中引入register类与插件配置类
+const log4js = require("log4js")
+const logger = log4js.getLogger("EGplugin")
+
+var plugin_register = new register()
+//产生plugin_register对象
+plugin_register.on_system_init(()=>{logger.info("插件插入服务初始化")})
+plugin_register.on_express_init(()=>{logger.info("插件插入web框架初始化")})
+router.get("/test",(req,res,next)=>{res.send("hello")})
+```
+
+其他功能实现可以翻看插件文件夹来查看

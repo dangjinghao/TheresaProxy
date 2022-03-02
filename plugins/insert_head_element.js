@@ -1,4 +1,4 @@
-const {PluginConfig,register} = require("../middleware/plugin_load")
+const {PluginConfig,register} = require("../middleware/plugin_devpkg")
 var IHE_Config = new PluginConfig("insert_head_element")
 
 function plugin_main(responseBuffer, proxyRes, req, res) {

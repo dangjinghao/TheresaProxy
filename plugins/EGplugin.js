@@ -1,0 +1,7 @@
+const {register,router}= require("../middleware/plugin_devpkg")
+const log4js = require("log4js")
+const logger = log4js.getLogger("EGplugin")
+var plugin_register = new register()
+plugin_register.on_system_init(()=>{logger.info("插件插入服务初始化")})
+plugin_register.on_express_init(()=>{logger.info("插件插入web框架初始化")})
+router.get("/test",(req,res,next)=>{res.send("hello")})

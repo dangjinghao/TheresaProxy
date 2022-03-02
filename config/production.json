@@ -1,38 +1,18 @@
 {
-  "site_mode": "mirror",
-  "express_listen_port": 3011,
-  "logs": {
-    "app": "./logs/app.log",
-    "access": "./logs/access.log"
-  },
-
-  "proxy": {
-    "middleware_config":{
-        "target": "",
-        "changeOrigin": true,
-        "ws": true,
-        "pathRewrite": {},
-        "selfHandleResponse":true
+    "mode": "mix",
+    "listen_port": 3011,
+    "logs": {
+      "app": "logs/app.log",
+      "access": "logs/access.log"
     },
-
-    "cache": {
-      "static_buffer_time": 600000,
-      "user_ip_check_time": 600000
-    },
-
-    "local_mirror_url":"/",
-    "to_main_site_url":"",
-    
-    "schedule":{
-      "time_config":"1 * * * * *",
-      "the_key":"",
-      "mirror_url":""
+    "disable_plugins": [],
+    "enable_plugins": [""],
+    "proxy": {
+      "target": "",
+      "changeOrigin": true,
+      "ws": true,
+      "pathRewrite": {},
+      "selfHandleResponse": true
     }
-
-  },
-  
-  "main_site":{
-    "redirect_mirror_url":"/into_mirror",
-    "accepted_keys":[""]
   }
-}
+  

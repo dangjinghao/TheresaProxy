@@ -1,0 +1,6 @@
+{
+    "user_ip_save_time":600000,
+    "carried_mirror_url":"http://127.0.0.1:3011",
+    "carried_check_key": "",
+    "main_site_url":"http://127.0.0.1:3011/mirror_api/proxy_status"
+}

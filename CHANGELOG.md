@@ -1,6 +1,21 @@
 # CHANGE LOG
 
-## 0.2.0 -2022.03.02
+## 0.2.1 - 2022.03.07
+
+### Features
+
+- Add the `on_express_middleware` hook for custom express middleware.
+
+### Changed
+
+- Move proxy config from `/splugins/` folder to `sys_core` file.
+
+### Fixed
+
+- Fixed the auto load of proxy middleware in `main_site` mode.
+
+## 0.2.0 - 2022.03.02
+
 **REBUILD ALL**
 
 ### Features
@@ -10,7 +25,7 @@
 ### Changed
 
 - Split application features into some single plugins.
-- Split application configuration file into  single files.
+- Split application configuration file into single files.
 - Adjust the application structure
 
 ### Refactored
@@ -21,7 +36,6 @@
 
 - many useless files.
 
-
 ## 0.1.7 - 2022.02.28
 
 ### Features
@@ -30,12 +44,12 @@ Now you can code plugins in `plugins` folder.
 
 ### Fixed
 
-- Adding some headers to `/into_mirror`  for no cache require.
+- Adding some headers to `/into_mirror` for no cache require.
 
 ### Changed
 
-- Insert text in `head` tag  in `plugins_config/insert_head_element.jons` instead of `config/xx.json`.
--   More suggestive logger.
+- Insert text in `head` tag in `plugins_config/insert_head_element.jons` instead of `config/xx.json`.
+- More suggestive logger.
 - Change log appeared
 
 ### Refactored
@@ -46,13 +60,11 @@ Now you can code plugins in `plugins` folder.
 
 - DIY.js
 
-
-
 ## 0.0.5 - 2022.02.26
 
 ### Fixed
 
-Fixed require  `/into_mirror` without response.
+Fixed require `/into_mirror` without response.
 
 ## 0.0.1 - 2022.02.21
 

@@ -11,13 +11,11 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run",
-                "test"
+                "linux_test"
             ],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            
-            
         }
     ]
 }

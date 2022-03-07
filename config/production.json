@@ -1,18 +1,18 @@
 {
-    "mode": "mix",
-    "listen_port": 3011,
-    "logs": {
-      "app": "logs/app.log",
-      "access": "logs/access.log"
-    },
-    "disable_plugins": [],
-    "enable_plugins": [""],
-    "proxy": {
-      "target": "",
-      "changeOrigin": true,
-      "ws": true,
-      "pathRewrite": {},
-      "selfHandleResponse": true
-    }
+  "mode": "mix",
+  "listen_port": 3011,
+  "logs": {
+    "app": "logs/app.log",
+    "access": "logs/access.log"
+  },
+  "disable_plugins": [],
+  "enable_plugins": [""],
+  "proxy": {
+    "mount_url": "/",
+    "target": "",
+    "changeOrigin": true,
+    "ws": true,
+    "pathRewrite": {},
+    "selfHandleResponse": true
   }
-  
+}

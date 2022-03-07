@@ -1,5 +1,5 @@
 const fs = require("fs");
-var { app_mode,disable_plugins, enable_plugins } = require("./middleware/sys_core");
+var { app_mode, disable_plugins, enable_plugins } = require("./middleware/sys_core");
 const path = require("path");
 const log4js = require("log4js");
 const { exit } = require("process");
@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "development") {
   var logger = log4js.getLogger("plugins_manager")
 }
 
-disable_plugins=Object.values(disable_plugins)
+disable_plugins = Object.values(disable_plugins)
 enable_plugins = Object.values(enable_plugins)
 try {
   fs.accessSync(plugins_path);
@@ -22,13 +22,16 @@ try {
 }
 var files = fs.readdirSync(plugins_path);
 
-switch(app_mode){
+switch (app_mode) {
   case "mirror":
+    logger.info("网站模式---代理")
     disable_plugins.push("mainsite_mode_router")
     break
   case "mix":
+    logger.info("网站模式---混合")
     break
   case "main_site":
+    logger.info("网站模式---主站点（仅负载均衡）")
     disable_plugins.push("static_cache")
     disable_plugins.push("mirror_status")
     break
@@ -36,22 +39,22 @@ switch(app_mode){
     logger.fatal("应用模式配置错误")
     exit()
 }
-if(files.length>0&&(enable_plugins.length>0||disable_plugins.length>0)){
-  
-  for(let disable_plugin of disable_plugins){
-    for(let files_check_num in files){
-      if(files[files_check_num].includes(disable_plugin+".js")) delete files[files_check_num]
-  }
-}
+if (files.length > 0 && (enable_plugins.length > 0 || disable_plugins.length > 0)) {
 
-  for(let files_check_num in files){
+  for (let disable_plugin of disable_plugins) {
+    for (let files_check_num in files) {
+      if (files[files_check_num].includes(disable_plugin + ".js")) delete files[files_check_num]
+    }
+  }
+
+  for (let files_check_num in files) {
 
     let enable_switch = false
-    for(let enable_plugin of enable_plugins){
-      if (files[files_check_num].includes(enable_plugin+".js")) enable_switch=true
+    for (let enable_plugin of enable_plugins) {
+      if (files[files_check_num].includes(enable_plugin + ".js")) enable_switch = true
     }
-      if(!enable_switch&&enable_plugins.length>0) delete files[files_check_num]
-    
+    if (!enable_switch && enable_plugins.length > 0) delete files[files_check_num]
+
   }
   files = files.filter(Boolean)
 }

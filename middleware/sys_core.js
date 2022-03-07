@@ -6,6 +6,7 @@ const router = express.Router()
 const app_log = config.get("logs.app")
 const access_log = config.get("logs.access")
 const listen_port = config.get("listen_port")
+const proxy_mount_url = config.get("proxy.mount_url")
 const proxy_target = config.get("proxy.target");
 const proxy_changeOrigin = config.get("proxy.changeOrigin");
 const proxy_ws = config.get("proxy.ws");
@@ -17,20 +18,29 @@ const app_mode = config.get("mode")
 app = express()
 
 log4js.configure({
-    appenders: {
-      file: { type: "file", filename: app_log },
-      console: { type: "console" },
-      access: { type: "file", filename: access_log },
-    },
-    categories: {
-      default: { appenders: ["console"], level: "debug" },
-      plugins_manager: { appenders: ["file", "console"], level: "info" },
-      express_access: { appenders: ["access"], level: "info" },
-      cache: { appenders: ["file", "console"], level: "info" },
-      app_framework: { appenders: ["file", "console"], level: "info" },
-      
-    },
-  });
+  appenders: {
+    file: { type: "file", filename: app_log },
+    console: { type: "console" },
+    access: { type: "file", filename: access_log },
+  },
+  categories: {
+    default: { appenders: ["console"], level: "debug" },
+    plugins_manager: { appenders: ["file", "console"], level: "info" },
+    express_access: { appenders: ["access"], level: "info" },
+    cache: { appenders: ["file", "console"], level: "info" },
+    app_framework: { appenders: ["file", "console"], level: "info" },
+
+  },
+});
+
+const proxy_options = {
+  target: proxy_target,
+  changeOrigin: proxy_changeOrigin,
+  ws: proxy_ws,
+  pathRewrite: proxy_pathRewrite,
+  selfHandleResponse: proxy_selfHandleResponse,
+}
+
 
 //在系统初始化时候进行
 var on_system_init_list = []
@@ -47,22 +57,26 @@ var on_user_require_list = []
 //在反代网站响应后处理
 var on_proxy_response_list = []
 
+//添加中间件
+var on_express_middleware = []
 
-module.exports={
-    on_system_init_list,
-    on_user_require_list,
-    on_express_init_list,
-    on_proxy_response_list,
-    on_schedule_list,
-    app,router,express,
-    listen_port,
-    proxy_changeOrigin,
-    proxy_ws,
-    proxy_pathRewrite,
-    proxy_selfHandleResponse,
-    proxy_target,
-    disable_plugins,
-    enable_plugins,
-    app_mode
-  
+module.exports = {
+  on_system_init_list,
+  on_user_require_list,
+  on_express_init_list,
+  on_proxy_response_list,
+  on_schedule_list,
+  app, router, express,
+  listen_port,
+  proxy_mount_url,
+  proxy_changeOrigin,
+  proxy_ws,
+  proxy_pathRewrite,
+  proxy_selfHandleResponse,
+  proxy_target,
+  disable_plugins,
+  enable_plugins,
+  app_mode,
+  on_express_middleware,
+  proxy_options
 }

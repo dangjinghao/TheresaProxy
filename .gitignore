@@ -5,3 +5,5 @@ logs
 config/development.json
 test.js
 cache_tmp
+.typingsrc
+typings

@@ -1,0 +1,8 @@
+{
+  "name": "theresa_proxy",
+  "dependencies": {},
+  "globalDependencies": {
+    "axios": "registry:dt/axios#0.9.1+20161016142654",
+    "node": "registry:dt/node#7.0.0+20170322231424"
+  }
+}

@@ -4,17 +4,20 @@ const {
   createProxyMiddleware,
   responseInterceptor,
 } = require("http-proxy-middleware")
-const { proxy_options } = require("./splugins/proxy_server")
 var {
   on_system_init_list,
   on_user_require_list,
   on_express_init_list,
   on_proxy_response_list,
   on_schedule_list,
+  on_express_middleware,
   app,
   express,
+  proxy_mount_url,
+  proxy_options,
   router,
   listen_port,
+  app_mode
 } = require("./middleware/sys_core")
 const schedule = require("node-schedule")
 
@@ -47,14 +50,14 @@ for (let plugin of on_express_init_list) {
 }
 
 app_logger.info("定时计划初始化中")
-for(let plugin of on_schedule_list){
-  schedule.scheduleJob(plugin[0],plugin[1])
+for (let plugin of on_schedule_list) {
+  schedule.scheduleJob(plugin[0], plugin[1])
 }
 
 router.all("*", (req, res, next) => {
   for (let router_handler of on_user_require_list) {
     var plugin_return_list = router_handler(req, res, next);
-    if(!plugin_return_list) return 0;
+    if (!plugin_return_list) return 0;
     var req = plugin_return_list[0]
     var res = plugin_return_list[1]
     var next = plugin_return_list[2]
@@ -79,9 +82,21 @@ proxy_options["onProxyRes"] = responseInterceptor(
     return responseBuffer
   }
 );
-
+app_logger.info("挂载路由")
 app.use(router)
-app.use(createProxyMiddleware(proxy_options))
+
+app_logger.info("加载中间件")
+//将反代中间件加入on_express_middlerware钩子中
+if (app_mode !== "main_site") on_express_middleware.push([proxy_mount_url, createProxyMiddleware(proxy_options)])
+
+for (let plugin of on_express_middleware) {
+  if (plugin[1] !== undefined) {
+    app.use(plugin[0], plugin[1])
+  }
+  else {
+    app.use(plugin[0])
+  }
+}
 app.listen(listen_port, () => {
-  app_logger.info(`服务器已启动在http://127.0.0.1:${listen_port}`)
+  app_logger.info(`服务器已启动在http://localhost:${listen_port}`)
 });
